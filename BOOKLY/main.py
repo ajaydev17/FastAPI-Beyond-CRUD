@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from typing import Optional
 
 # create the fastapi app
 app = FastAPI()
@@ -20,3 +21,9 @@ async def greet_user(name: str) -> dict:
 @app.get('/greetUser')
 async def greet_query_parameter_user(user: str) -> dict:
     return {"message": f"Hello!, {user}"}
+
+
+# default query parameter example
+@app.get('/greetDefaultUser')
+async def greet_query_parameter_user(user: Optional[str]= 'user', age: int= 0) -> dict:
+    return {"message": f"Hello!, {user}", "age": age}
