@@ -122,7 +122,7 @@ async def get_all_books() -> List:
 # get the book by ID
 @app.get('/books/{book_id}', response_model=BookListingSerializer, 
          status_code=status.HTTP_200_OK)
-async def get_book(book_id: int):
+async def get_book(book_id: int) -> BookListingSerializer:
     for book in books:
         if book['id'] == book_id:
             return book
@@ -132,7 +132,7 @@ async def get_book(book_id: int):
 
 # add a book to the list
 @app.post('/books', status_code=status.HTTP_201_CREATED)
-async def create_book(book_data: BookListingSerializer):
+async def create_book(book_data: BookListingSerializer) -> dict:
     new_book = book_data.model_dump()
     books.append(new_book)
     return new_book
