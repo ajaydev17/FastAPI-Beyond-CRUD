@@ -128,3 +128,11 @@ async def get_book(book_id: int):
             return book
 
     raise HTTPException(detail='Item not found', status_code=status.HTTP_404_NOT_FOUND)
+
+
+# add a book to the list
+@app.post('/books', status_code=status.HTTP_201_CREATED)
+async def create_book(book_data: BookListingSerializer):
+    new_book = book_data.model_dump()
+    books.append(new_book)
+    return new_book
