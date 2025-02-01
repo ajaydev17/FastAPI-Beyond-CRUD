@@ -37,7 +37,7 @@ async def greet_query_parameter_user(user: Optional[str]= 'user', age: int= 0) -
 
 # create a book post request
 @app.post('/createBook')
-async def create_book(book_data: BookSerializer):
+async def create_book(book_data: BookSerializer) -> dict:
     return {
         "title": book_data.title,
         "author": book_data.author
@@ -51,7 +51,7 @@ async def get_headers(
     content_type: str= Header(None),
     user_agent: str= Header(None),
     host: str= Header(None)
-    ):
+    ) -> dict:
     request_headers = {}
 
     request_headers['Accept'] = accept
