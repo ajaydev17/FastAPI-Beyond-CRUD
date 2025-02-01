@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 from typing import List
 
@@ -116,3 +116,14 @@ books = [
 @app.get('/books', response_model=List[BookListingSerializer])
 async def get_all_books() -> List:
     return books
+
+
+# get the book by ID
+@app.get('/books/{book_id}', response_model=BookListingSerializer, 
+         status_code=status.HTTP_200_OK)
+async def get_book(book_id: int):
+    for book in books:
+        if book['id'] == book_id:
+            return book
+
+    raise HTTPException(detail='Item not found', status_code=status.HTTP_404_NOT_FOUND)
