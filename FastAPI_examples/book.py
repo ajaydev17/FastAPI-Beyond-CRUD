@@ -113,7 +113,8 @@ books = [
 
 
 # get all the books
-@app.get('/books', response_model=List[BookListingSerializer])
+@app.get('/books', response_model=List[BookListingSerializer], 
+         status_code=status.HTTP_200_OK)
 async def get_all_books() -> List:
     return books
 
