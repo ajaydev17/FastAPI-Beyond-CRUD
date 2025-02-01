@@ -1,8 +1,14 @@
 from fastapi import FastAPI
 from typing import Optional
+from pydantic import BaseModel
 
 # create the fastapi app
 app = FastAPI()
+
+
+class BookSerializer(BaseModel):
+    title: str
+    author: str
 
 
 # define the roots
@@ -27,3 +33,12 @@ async def greet_query_parameter_user(user: str) -> dict:
 @app.get('/greetDefaultUser')
 async def greet_query_parameter_user(user: Optional[str]= 'user', age: int= 0) -> dict:
     return {"message": f"Hello!, {user}", "age": age}
+
+
+# create a book post request
+@app.post('/createBook')
+async def create_book(book_data: BookSerializer):
+    return {
+        "title": book_data.title,
+        "author": book_data.author
+    }
