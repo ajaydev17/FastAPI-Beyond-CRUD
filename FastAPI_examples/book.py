@@ -1,5 +1,17 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List
 
+
+# create a schema for book listing
+class BookListingSerializer(BaseModel):
+    id: int
+    title: str
+    author: str
+    publisher: str
+    published_date: str
+    page_count: int
+    language: str
 
 # create the fastapi instance
 app = FastAPI()
@@ -99,3 +111,8 @@ books = [
   }
 ]
 
+
+# get all the books
+@app.get('/books', response_model=List[BookListingSerializer])
+async def get_all_books() -> List:
+    return books
