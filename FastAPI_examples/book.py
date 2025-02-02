@@ -14,6 +14,14 @@ class BookListingSerializer(BaseModel):
     page_count: int
     language: str
 
+
+class BookUpdateSerializer(BaseModel):
+    title: str
+    author: str
+    publisher: str
+    page_count: int
+    language: str
+
 # create the fastapi instance
 app = FastAPI()
 
@@ -137,3 +145,19 @@ async def create_book(book_data: BookListingSerializer) -> dict:
     new_book = book_data.model_dump()
     books.append(new_book)
     return new_book
+
+
+# update a book
+@app.patch('/books/{book_id}', response_model=BookListingSerializer, status_code=status.HTTP_200_OK)
+async def update_book(book_id: int, book_data: BookUpdateSerializer):
+    for book in books:
+        if book['id'] == book_id:
+            book['title'] = book_data.title
+            book['author'] = book_data.author
+            book['publisher'] = book_data.publisher
+            book['page_count'] = book_data.page_count
+            book['language'] = book_data.language
+
+            return book
+
+    raise HTTPException(detail='Book not found', status_code=status.HTTP_404_NOT_FOUND)
