@@ -9,3 +9,7 @@ class Settings(BaseSettings):
         env_file='.env',
         extra='ignore'
     )
+
+
+# create an instance of configuration
+config = Settings()
