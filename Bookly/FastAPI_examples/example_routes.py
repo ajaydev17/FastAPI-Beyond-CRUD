@@ -31,7 +31,7 @@ async def greet_query_parameter_user(user: str) -> dict:
 
 # default query parameter example
 @app.get('/greetDefaultUser')
-async def greet_query_parameter_user(user: Optional[str]= 'user', age: int= 0) -> dict:
+async def greet_query_parameter_user(user: Optional[str] = 'user', age: int = 0) -> dict:
     return {"message": f"Hello!, {user}", "age": age}
 
 
@@ -47,17 +47,16 @@ async def create_book(book_data: BookSerializer) -> dict:
 # get header request
 @app.get('/getHeaders')
 async def get_headers(
-    accept: str= Header(None),
-    content_type: str= Header(None),
-    user_agent: str= Header(None),
-    host: str= Header(None)
-    ) -> dict:
+    accept: str = Header(None),
+    content_type: str = Header(None),
+    user_agent: str = Header(None),
+    host: str = Header(None)
+) -> dict:
     request_headers = {}
 
     request_headers['Accept'] = accept
     request_headers['Content-Type'] = content_type
-    request_headers['User-Agent']= user_agent
-    request_headers['Host']= host
+    request_headers['User-Agent'] = user_agent
+    request_headers['Host'] = host
 
     return request_headers
-

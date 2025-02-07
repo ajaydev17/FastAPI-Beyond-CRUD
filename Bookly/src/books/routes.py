@@ -9,23 +9,23 @@ from src.books.schemas import BookListingSerializer, BookUpdateSerializer
 book_router = APIRouter()
 
 
-
 # get all the books
 @book_router.get('', response_model=List[BookListingSerializer],
-         status_code=status.HTTP_200_OK)
+                 status_code=status.HTTP_200_OK)
 async def get_all_books() -> List:
     return books
 
 
 # get the book by ID
 @book_router.get('/{book_id}', response_model=BookListingSerializer,
-         status_code=status.HTTP_200_OK)
+                 status_code=status.HTTP_200_OK)
 async def get_book(book_id: int) -> BookListingSerializer:
     for book in books:
         if book['id'] == book_id:
             return book
 
-    raise HTTPException(detail='Item not found', status_code=status.HTTP_404_NOT_FOUND)
+    raise HTTPException(detail='Item not found',
+                        status_code=status.HTTP_404_NOT_FOUND)
 
 
 # add a book to the list
@@ -37,7 +37,9 @@ async def create_book(book_data: BookListingSerializer) -> dict:
 
 
 # update a book
-@book_router.patch('/{book_id}', response_model=BookListingSerializer, status_code=status.HTTP_200_OK)
+@book_router.patch('/{book_id}',
+                   response_model=BookListingSerializer,
+                   status_code=status.HTTP_200_OK)
 async def update_book(book_id: int, book_data: BookUpdateSerializer) -> dict:
     for book in books:
         if book['id'] == book_id:
@@ -49,7 +51,8 @@ async def update_book(book_id: int, book_data: BookUpdateSerializer) -> dict:
 
             return book
 
-    raise HTTPException(detail='Book not found', status_code=status.HTTP_404_NOT_FOUND)
+    raise HTTPException(detail='Book not found',
+                        status_code=status.HTTP_404_NOT_FOUND)
 
 
 # delete a book
@@ -61,4 +64,5 @@ async def delete_book(book_id: int) -> None:
 
             return {}
 
-    raise HTTPException(detail='Book not found', status_code=status.HTTP_404_NOT_FOUND)
+    raise HTTPException(detail='Book not found',
+                        status_code=status.HTTP_404_NOT_FOUND)
