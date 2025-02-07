@@ -28,13 +28,13 @@ class Book(SQLModel, table=True):
     page_count: int
     language: str
     created_at: datetime = Field(
-        Column(
+        sa_column=Column(
             pg.TIMESTAMP(timezone=True),
             default_factory=datetime.now
         )
     )
     updated_at: datetime = Field(
-        Column(
+        sa_column=Column(
             pg.TIMESTAMP(timezone=True),
             default_factory=datetime.now,
             onupdate=datetime.now
