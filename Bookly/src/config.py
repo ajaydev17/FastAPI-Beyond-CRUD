@@ -12,4 +12,4 @@ class Settings(BaseSettings):
 
 
 # create an instance of configuration
-config = Settings()
+Config = Settings()
