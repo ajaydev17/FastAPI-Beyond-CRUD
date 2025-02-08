@@ -1,10 +1,12 @@
+from src.books.service import BookService
+from sqlmodel.ext.asyncio.session import AsyncSession
+from src.db.main import get_session
 from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
 from typing import List
-from src.books.schemas import BookView, BookCreate, BookUpdate
-from src.db.main import get_session
-from sqlmodel.ext.asyncio.session import AsyncSession
-from src.books.service import BookService
+from src.books.schemas import (BookViewSchema,
+                               BookCreateSchema,
+                               BookUpdateSchema)
 
 
 # create a router
@@ -15,7 +17,7 @@ book_service = BookService()
 
 
 # get all the books
-@book_router.get('', response_model=List[BookView],
+@book_router.get('', response_model=List[BookViewSchema],
                  status_code=status.HTTP_200_OK)
 async def get_all_books(session: AsyncSession = Depends(get_session)) -> List:
     books = await book_service.get_all_books(session)
@@ -23,10 +25,11 @@ async def get_all_books(session: AsyncSession = Depends(get_session)) -> List:
 
 
 # get the book by ID
-@book_router.get('/{book_uid}', response_model=BookView,
+@book_router.get('/{book_uid}', response_model=BookViewSchema,
                  status_code=status.HTTP_200_OK)
 async def get_book(book_uid: str,
-                   session: AsyncSession = Depends(get_session)) -> BookView:
+                   session: AsyncSession = Depends(get_session)
+                   ) -> BookViewSchema:
     book = await book_service.get_book(book_uid, session)
 
     if book:
@@ -38,9 +41,9 @@ async def get_book(book_uid: str,
 
 # add a book to the list
 @book_router.post('',
-                  response_model=BookView,
+                  response_model=BookViewSchema,
                   status_code=status.HTTP_201_CREATED)
-async def create_book(book_data: BookCreate,
+async def create_book(book_data: BookCreateSchema,
                       session: AsyncSession = Depends(get_session)) -> dict:
     book = await book_service.create_book(book_data, session)
     return book
@@ -48,9 +51,9 @@ async def create_book(book_data: BookCreate,
 
 # update a book
 @book_router.patch('/{book_uid}',
-                   response_model=BookView,
+                   response_model=BookViewSchema,
                    status_code=status.HTTP_200_OK)
-async def update_book(book_uid: str, book_data: BookUpdate,
+async def update_book(book_uid: str, book_data: BookUpdateSchema,
                       session: AsyncSession = Depends(get_session)) -> dict:
     book = await book_service.update_book(book_uid, book_data, session)
 

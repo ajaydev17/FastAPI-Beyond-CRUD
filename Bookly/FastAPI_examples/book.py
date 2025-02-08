@@ -15,7 +15,7 @@ class BookListingSerializer(BaseModel):
     language: str
 
 
-class BookUpdateSerializer(BaseModel):
+class BookUpdateSchemaSerializer(BaseModel):
     title: str
     author: str
     publisher: str
@@ -151,7 +151,7 @@ async def create_book(book_data: BookListingSerializer) -> dict:
 
 # update a book
 @app.patch('/books/{book_id}', response_model=BookListingSerializer, status_code=status.HTTP_200_OK)
-async def update_book(book_id: int, book_data: BookUpdateSerializer) -> dict:
+async def update_book(book_id: int, book_data: BookUpdateSchemaSerializer) -> dict:
     for book in books:
         if book['id'] == book_id:
             book['title'] = book_data.title

@@ -4,7 +4,7 @@ import uuid
 
 
 # create a schema for book model
-class BookView(BaseModel):
+class BookViewSchema(BaseModel):
     uid: uuid.UUID
     title: str
     author: str
@@ -16,7 +16,7 @@ class BookView(BaseModel):
     updated_at: datetime
 
 
-class BookCreate(BaseModel):
+class BookCreateSchema(BaseModel):
     title: str
     author: str
     publisher: str
@@ -25,7 +25,7 @@ class BookCreate(BaseModel):
     language: str
 
 
-class BookUpdate(BaseModel):
+class BookUpdateSchema(BaseModel):
     title: str
     author: str
     publisher: str
