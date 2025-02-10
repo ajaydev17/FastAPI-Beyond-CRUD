@@ -7,6 +7,7 @@ from typing import List
 from src.books.schemas import (BookViewSchema,
                                BookCreateSchema,
                                BookUpdateSchema)
+from src.auth.dependencies import AccessTokenBearer
 
 
 # create a router
@@ -15,11 +16,17 @@ book_router = APIRouter()
 # create an instance of the BookService
 book_service = BookService()
 
+# create an instance of token security
+access_token_bearer = AccessTokenBearer()
+
 
 # get all the books
 @book_router.get('', response_model=List[BookViewSchema],
                  status_code=status.HTTP_200_OK)
-async def get_all_books(session: AsyncSession = Depends(get_session)) -> List:
+async def get_all_books(
+    session: AsyncSession = Depends(get_session),
+    user_details=Depends(access_token_bearer)
+) -> List:
     books = await book_service.get_all_books(session)
     return books
 
@@ -27,9 +34,11 @@ async def get_all_books(session: AsyncSession = Depends(get_session)) -> List:
 # get the book by ID
 @book_router.get('/{book_uid}', response_model=BookViewSchema,
                  status_code=status.HTTP_200_OK)
-async def get_book(book_uid: str,
-                   session: AsyncSession = Depends(get_session)
-                   ) -> BookViewSchema:
+async def get_book(
+    book_uid: str,
+    session: AsyncSession = Depends(get_session),
+    user_details = Depends(access_token_bearer)
+) -> BookViewSchema:
     book = await book_service.get_book(book_uid, session)
 
     if book:
@@ -43,8 +52,11 @@ async def get_book(book_uid: str,
 @book_router.post('',
                   response_model=BookViewSchema,
                   status_code=status.HTTP_201_CREATED)
-async def create_book(book_data: BookCreateSchema,
-                      session: AsyncSession = Depends(get_session)) -> dict:
+async def create_book(
+    book_data: BookCreateSchema,
+    session: AsyncSession = Depends(get_session),
+    user_details = Depends(access_token_bearer)
+) -> dict:
     book = await book_service.create_book(book_data, session)
     return book
 
@@ -53,8 +65,12 @@ async def create_book(book_data: BookCreateSchema,
 @book_router.patch('/{book_uid}',
                    response_model=BookViewSchema,
                    status_code=status.HTTP_200_OK)
-async def update_book(book_uid: str, book_data: BookUpdateSchema,
-                      session: AsyncSession = Depends(get_session)) -> dict:
+async def update_book(
+    book_uid: str,
+    book_data: BookUpdateSchema,
+    session: AsyncSession = Depends(get_session),
+    user_details = Depends(access_token_bearer)
+) -> dict:
     book = await book_service.update_book(book_uid, book_data, session)
 
     if book:
@@ -66,8 +82,11 @@ async def update_book(book_uid: str, book_data: BookUpdateSchema,
 
 # delete a book
 @book_router.delete('/{book_uid}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_book(book_uid: str,
-                      session: AsyncSession = Depends(get_session)) -> None:
+async def delete_book(
+    book_uid: str,
+    session: AsyncSession = Depends(get_session),
+    user_details = Depends(access_token_bearer)
+) -> None:
     book = await book_service.delete_book(book_uid, session)
 
     if not book:

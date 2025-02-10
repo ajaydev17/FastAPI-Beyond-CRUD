@@ -6,17 +6,20 @@ from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from src.auth.utils import (
     create_access_token,
-    decode_access_token,
     verify_password_hash
 )
-from datetime import timedelta
+from datetime import timedelta, datetime
 from fastapi.responses import JSONResponse
+from src.auth.dependencies import RefreshTokenBearer
 
 # define the router
 auth_router = APIRouter()
 
 # user service instance
 user_service = UserService()
+
+# create the instance of refresh token class
+refresh_token_bearer = RefreshTokenBearer()
 
 REFRESH_TOKEN_EXPIRY = 2
 
@@ -87,4 +90,27 @@ async def login(
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
         detail='Invalid email or password'
+    )
+
+
+@auth_router.get('/refresh_token')
+async def get_new_access_token(
+    token_details: dict = Depends(refresh_token_bearer)
+):
+    expiry_timestamp = token_details['exp']
+
+    if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
+        access_token = create_access_token(
+            user_data=token_details['user']
+        )
+
+        return JSONResponse(
+            content={
+                "access_token": access_token
+            }
+        )
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail='Invalid or expired token!'
     )

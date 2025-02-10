@@ -32,7 +32,7 @@ def create_access_token(
     payload['exp'] = datetime.now() + (
         expiry if expiry else timedelta(seconds=ACCESS_TOKEN_EXPIRY)
     )
-    payload['jjti'] = str(uuid.uuid4())
+    payload['jti'] = str(uuid.uuid4())
     payload['refresh'] = refresh
 
     token = jwt.encode(
