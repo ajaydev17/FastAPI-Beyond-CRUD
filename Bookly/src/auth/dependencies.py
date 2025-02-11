@@ -2,8 +2,16 @@ from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 from src.auth.utils import decode_access_token
 from fastapi.exceptions import HTTPException
-from fastapi import status, Request
+from fastapi import status, Request, Depends
 from src.db.redis import check_jti_in_blocklist
+from src.db.main import get_session
+from sqlmodel.ext.asyncio.session import AsyncSession
+from src.auth.service import UserService
+from typing import List, Any
+from src.auth.models import User
+
+# create an instance of the user service
+user_service = UserService()
 
 
 class TokenBearer(HTTPBearer):
@@ -63,3 +71,30 @@ class RefreshTokenBearer(TokenBearer):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail='Please provide a refresh token!'
             )
+
+
+# create an instance of access token bearer class
+access_token_bearer = AccessTokenBearer()
+
+
+async def get_current_user(
+    token_details: dict = Depends(access_token_bearer),
+    session: AsyncSession = Depends(get_session)
+):
+    user_email = token_details['user']['email']
+    user = await user_service.get_user_by_email(user_email, session)
+    return user
+
+
+class RoleChecker:
+    def __init__(self, allowed_roles: List[str]) -> None:
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, current_user=Depends(get_current_user)) -> Any:
+        if current_user.role in self.allowed_roles:
+            return True
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this resource."
+        )

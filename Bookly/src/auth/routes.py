@@ -10,7 +10,12 @@ from src.auth.utils import (
 )
 from datetime import timedelta, datetime
 from fastapi.responses import JSONResponse
-from src.auth.dependencies import RefreshTokenBearer, AccessTokenBearer
+from src.auth.dependencies import (
+    RefreshTokenBearer,
+    AccessTokenBearer,
+    get_current_user,
+    RoleChecker
+)
 from src.db.redis import add_jti_to_blocklist
 
 # define the router
@@ -18,6 +23,9 @@ auth_router = APIRouter()
 
 # user service instance
 user_service = UserService()
+
+# role checker
+role_checker = RoleChecker(['admin', 'user'])
 
 # create the instance of refresh token class, access token class
 refresh_token_bearer = RefreshTokenBearer()
@@ -47,7 +55,8 @@ async def create_user_account(
 
 @auth_router.post('/login')
 async def login(
-    user_data: UserLoginSchema, session: AsyncSession = Depends(get_session)
+    user_data: UserLoginSchema,
+    session: AsyncSession = Depends(get_session)
 ):
     email = user_data.email
     password = user_data.password
@@ -64,7 +73,8 @@ async def login(
             access_token = create_access_token(
                 user_data={
                     'email': user.email,
-                    'user_id': str(user.uid)
+                    'user_id': str(user.uid),
+                    'role': user.role
                 }
             )
 
@@ -131,3 +141,11 @@ async def logout(
         },
         status_code=status.HTTP_200_OK
     )
+
+
+@auth_router.get('/me', response_model=UserViewSchema)
+async def current_user(
+    current_user: UserViewSchema = Depends(get_current_user),
+    _: bool = Depends(role_checker)
+):
+    return current_user
