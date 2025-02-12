@@ -73,7 +73,7 @@ async def login(
             access_token = create_access_token(
                 user_data={
                     'email': user.email,
-                    'user_id': str(user.uid),
+                    'user_uid': str(user.uid),
                     'role': user.role
                 }
             )
@@ -81,7 +81,7 @@ async def login(
             refresh_token = create_access_token(
                 user_data={
                     'email': user.email,
-                    'user_id': str(user.uid)
+                    'user_uid': str(user.uid)
                 },
                 refresh=True,
                 expiry=timedelta(days=REFRESH_TOKEN_EXPIRY)
@@ -94,7 +94,7 @@ async def login(
                     'refresh_token': refresh_token,
                     'user': {
                         'email': user.email,
-                        'user_id': str(user.uid)
+                        'user_uid': str(user.uid)
                     }
                 }
             )
