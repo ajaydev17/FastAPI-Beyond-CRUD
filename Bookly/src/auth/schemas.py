@@ -15,8 +15,10 @@ class UserViewSchema(BaseModel):
     password_hash: str = Field(exclude=True)
     created_at: datetime
     updated_at: datetime
-    books: List[BookViewSchema]
 
+
+class UserBookViewSchema(UserViewSchema):
+    books: List[BookViewSchema]
 
 class UserCreateSchema(BaseModel):
     username: str = Field(max_length=20)

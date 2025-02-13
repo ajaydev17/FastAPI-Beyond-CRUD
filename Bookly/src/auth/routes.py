@@ -1,6 +1,11 @@
 from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
-from src.auth.schemas import UserCreateSchema, UserViewSchema, UserLoginSchema
+from src.auth.schemas import (
+    UserCreateSchema, 
+    UserViewSchema, 
+    UserLoginSchema,
+    UserBookViewSchema
+)
 from src.auth.service import UserService
 from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
@@ -143,7 +148,7 @@ async def logout(
     )
 
 
-@auth_router.get('/me', response_model=UserViewSchema)
+@auth_router.get('/me', response_model=UserBookViewSchema)
 async def current_user(
     current_user: UserViewSchema = Depends(get_current_user),
     _: bool = Depends(role_checker)
