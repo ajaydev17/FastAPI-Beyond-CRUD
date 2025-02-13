@@ -173,3 +173,6 @@ cython_debug/
 # alembic migration script
 migrations/
 alembic.ini
+
+# pycharm configuration
+.idea/
