@@ -4,6 +4,7 @@ from src.auth.routes import auth_router
 from src.reviews.routes import review_router
 from contextlib import asynccontextmanager
 from src.db.main import init_db
+from src.errors import register_all_exceptions
 
 
 # this gonna run as the first thing when the server starts
@@ -25,6 +26,9 @@ app = FastAPI(
     title='Bookly',
     description='A REST API for book review web service'
 )
+
+# register all exceptions
+register_all_exceptions(app)
 
 
 # include the router in the app

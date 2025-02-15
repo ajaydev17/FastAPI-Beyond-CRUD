@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from datetime import datetime, date
 import uuid
+from typing import List
+from src.reviews.schemas import ReviewViewSchema
 
 
 # create a schema for book model
@@ -14,6 +16,10 @@ class BookViewSchema(BaseModel):
     language: str
     created_at: datetime
     updated_at: datetime
+
+
+class BookReviewViewSchema(BookViewSchema):
+    reviews: List[ReviewViewSchema]
 
 
 class BookCreateSchema(BaseModel):

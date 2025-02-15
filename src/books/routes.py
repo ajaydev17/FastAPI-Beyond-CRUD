@@ -6,8 +6,10 @@ from fastapi.exceptions import HTTPException
 from typing import List
 from src.books.schemas import (BookViewSchema,
                                BookCreateSchema,
-                               BookUpdateSchema)
+                               BookUpdateSchema,
+                               BookReviewViewSchema)
 from src.auth.dependencies import AccessTokenBearer, RoleChecker
+from src.errors import BookNotFound
 
 
 # create a router
@@ -48,21 +50,20 @@ async def get_books_by_user(
 
 
 # get the book by ID
-@book_router.get('/{book_uid}', response_model=BookViewSchema,
+@book_router.get('/{book_uid}', response_model=BookReviewViewSchema,
                  status_code=status.HTTP_200_OK,
                  dependencies=[Depends(role_checker)])
 async def get_book(
     book_uid: str,
     session: AsyncSession = Depends(get_session),
     token_details: dict = Depends(access_token_bearer)
-) -> BookViewSchema:
+) -> BookReviewViewSchema:
     book = await book_service.get_book(book_uid, session)
 
     if book:
         return book
     else:
-        raise HTTPException(detail='Item not found',
-                            status_code=status.HTTP_404_NOT_FOUND)
+        raise BookNotFound()
 
 
 # add a book to the list
@@ -96,8 +97,7 @@ async def update_book(
     if book:
         return book
     else:
-        raise HTTPException(detail='Book not found',
-                            status_code=status.HTTP_404_NOT_FOUND)
+        raise BookNotFound()
 
 
 # delete a book
@@ -112,7 +112,6 @@ async def delete_book(
     book = await book_service.delete_book(book_uid, session)
 
     if not book:
-        raise HTTPException(detail='Book not found',
-                            status_code=status.HTTP_404_NOT_FOUND)
+        raise BookNotFound()
     else:
         return None

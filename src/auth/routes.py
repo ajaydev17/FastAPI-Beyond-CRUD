@@ -22,6 +22,11 @@ from src.auth.dependencies import (
     RoleChecker
 )
 from src.db.redis import add_jti_to_blocklist
+from src.errors import (
+    InvalidToken,
+    InvalidCredentials,
+    UserAlreadyExists
+)
 
 # define the router
 auth_router = APIRouter()
@@ -45,14 +50,13 @@ REFRESH_TOKEN_EXPIRY = 2
 async def create_user_account(
     user_data: UserCreateSchema,
     session: AsyncSession = Depends(get_session)
-):
+) -> UserViewSchema:
     email = user_data.email
 
     is_user_exists = await user_service.check_user_exists(email, session)
 
     if is_user_exists:
-        raise HTTPException(detail='User with email already exists.',
-                            status_code=status.HTTP_403_FORBIDDEN)
+        raise UserAlreadyExists()
 
     user = await user_service.create_user(user_data, session)
     return user
@@ -62,7 +66,7 @@ async def create_user_account(
 async def login(
     user_data: UserLoginSchema,
     session: AsyncSession = Depends(get_session)
-):
+) -> dict:
     email = user_data.email
     password = user_data.password
 
@@ -104,16 +108,13 @@ async def login(
                 }
             )
 
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail='Invalid email or password'
-    )
+    raise InvalidCredentials()
 
 
 @auth_router.get('/refresh_token')
 async def get_new_access_token(
     token_details: dict = Depends(refresh_token_bearer)
-):
+) -> dict:
     expiry_timestamp = token_details['exp']
 
     if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
@@ -127,16 +128,13 @@ async def get_new_access_token(
             }
         )
 
-    raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        detail='Invalid or expired token!'
-    )
+    raise InvalidToken()
 
 
 @auth_router.post('/logout')
 async def logout(
     token_details: dict = Depends(access_token_bearer)
-):
+) -> dict:
     jti = token_details['jti']
     await add_jti_to_blocklist(jti)
 
@@ -149,8 +147,8 @@ async def logout(
 
 
 @auth_router.get('/me', response_model=UserBookViewSchema)
-async def current_user(
+async def get_current_user_details(
     current_user: UserViewSchema = Depends(get_current_user),
     _: bool = Depends(role_checker)
-):
+) -> UserBookViewSchema:
     return current_user

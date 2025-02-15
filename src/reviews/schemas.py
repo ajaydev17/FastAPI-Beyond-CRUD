@@ -4,7 +4,7 @@ from typing import Optional
 from datetime import datetime
 
 
-class ReviewViewModel(BaseModel):
+class ReviewViewSchema(BaseModel):
     uid: uuid.UUID
     rating: int
     review_text: str
@@ -14,6 +14,6 @@ class ReviewViewModel(BaseModel):
     updated_at: datetime
 
 
-class ReviewCreateModel(BaseModel):
+class ReviewCreateSchema(BaseModel):
     rating: int = Field(lt=5)
     review_text: str

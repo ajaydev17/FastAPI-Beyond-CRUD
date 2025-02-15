@@ -98,7 +98,7 @@ class Book(SQLModel, table=True):
     )
     user: Optional[User] = Relationship(back_populates="books")
     reviews: List['Review'] = Relationship(
-        back_populates='user', sa_relationship_kwargs={'lazy': 'selectin'}
+        back_populates='book', sa_relationship_kwargs={'lazy': 'selectin'}
     )
 
     def __repr__(self):
