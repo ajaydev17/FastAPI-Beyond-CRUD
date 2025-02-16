@@ -73,6 +73,13 @@ class UserNotFound(BooklyException):
     pass
 
 
+class ReviewNotFound(BooklyException):
+    """
+    Raised when the review is not found.
+    """
+    pass
+
+
 def create_exception_handler(status_code: int, initial_detail: Any) -> Callable[[Request, Exception], JSONResponse]:
     async def exception_handler(request: Request, exc: BooklyException):
         return JSONResponse(
@@ -182,6 +189,17 @@ def register_all_exceptions(app: FastAPI):
             initial_detail={
                 "message": "Insufficient permissions",
                 "error_code": "insufficient_permissions"
+            }
+        )
+    )
+
+    app.add_exception_handler(
+        ReviewNotFound,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={
+                "message": "Review not found",
+                "error_code": "review_not_found"
             }
         )
     )
