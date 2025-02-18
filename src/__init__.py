@@ -5,6 +5,7 @@ from src.reviews.routes import review_router
 from contextlib import asynccontextmanager
 from src.db.main import init_db
 from src.errors import register_all_exceptions
+from src.middleware import register_middleware
 
 
 # this gonna run as the first thing when the server starts
@@ -29,6 +30,9 @@ app = FastAPI(
 
 # register all exceptions
 register_all_exceptions(app)
+
+# register all middleware
+register_middleware(app)
 
 
 # include the router in the app
